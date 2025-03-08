@@ -1,0 +1,38 @@
+% test.tex
+\documentclass[oneside, twocolumn, zh]{assignment} % 测试双边双栏中文模式
+
+\DocInfo[
+    title=微分方程应用,
+    course=高等数学作业,
+    code=MATH101,
+    name=张三,
+    id=20230001
+]
+
+\LayoutInfo[
+    lineSpacing=1.2,          % 行间距
+    tableLineSpacing=1.5,    % 表格行间距
+    indent=2em,               % 缩进（需单位）
+    paragraphSpacing=1.5em    % 段间距（需单位）
+]
+
+\BibInfo[
+    style=apa,
+    language=english,
+    sorting=none,
+    path=./ref.bib
+]
+
+\FigInfo[
+    path=./img/
+]
+
+\usepackage{lipsum} % 生成示例文本
+
+\begin{document}
+
+\input{section/test}
+\newpage
+\input{section/ref}
+
+\end{document}
