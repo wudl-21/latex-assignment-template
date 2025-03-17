@@ -1,41 +1,56 @@
 % 首页信息自动生成
 
-\section{数学符号测试}
-绝对值：$\abs{x+y}$，范数：$\norm{\bm{v}}$
+\section{数学符号}
+\begin{table}[H]
+    \centering
+    \begin{tabular}{l >{$\displaystyle}c<{$} >{\ttfamily}c}
+        \toprule
+        名称 & \multicolumn{1}{c}{样式} & \multicolumn{1}{c}{命令}\\
+        \midrule
+        绝对值 & \abs{x} & \textbackslash abs\{x\}\\
+        范数 & \norm{v} & \textbackslash norm\{v\}\\
+        期望值 & \Ex{X} & \textbackslash Ex\{X\}\\
+        条件期望 & \Ex[Y]{X} & \textbackslash Ex[Y]\{X\}\\
+        概率 & \Pr{A} & \textbackslash Pr\{A\}\\
+        条件概率 & \Pr[B]{A} & \textbackslash Pr[B]\{A\}\\
+        协方差 & \Cov{X}{Y} & \textbackslash Cov\{X\}\{Y\}\\
+        方差 & \Var{X} & \textbackslash Var\{X\}\\
+        极小值 & \argmin[x]{f(x)} & \textbackslash argmin[x]\{f(x)\}\\
+        极大值 & \argmax[x]{g(x)} & \textbackslash argmax[x]\{g(x)\}\\
+        超长符号 & \longstack{~}{BCDEFGHIJKLM} & \textbackslash longstack\{\textasciitilde\}\{BCDEFGHIJKLM\}\\
+        \bottomrule
+    \end{tabular}
+\end{table}
 
-期望值：$\Ex{X}$, 条件期望：$\Ex[Y]{X}$
+\section{标记}
+\begin{table}[H]
+    \centering
+    \begin{tabular}{l >{$\displaystyle}c<{$} >{\ttfamily}c}
+    \toprule
+    名称 & \multicolumn{1}{c}{样式} & \multicolumn{1}{c}{命令}\\
+    \midrule
+    下划线 & \muline{xxxx} & \textbackslash muline\{xxxx\}\\
+    双下划线 & \muuline{xxxx} & \textbackslash muuline\{xxxx\}\\
+    波浪下划线 & \muwave{xxxx} & \textbackslash muwave\{xxxx\}\\
+    删除线 & \msout{xxxx} & \textbackslash msout\{xxxx\}\\
+    多条斜线删除标记 & \mxout{xxxx} & \textbackslash mxout\{xxxx\}\\
+    虚下划线 & \mdashuline{xxxx} & \textbackslash mdashuline\{xxxx\}\\
+    点状虚下划线 & \mdotuline{xxxx} & \textbackslash mdotuline\{xxxx\}\\
+    \bottomrule
+    \end{tabular}
+\end{table}
 
-概率：$\Pr{A}$, 条件概率：$\Pr[B]{A}$
-
-协方差：$\Cov{X}{Y}$, 方差：$\Var{X}$
-
-极值点：$\argmin[x]{f(x)}$, $$\argmax[x]{g(x)}$$
-
-长符号：$\longstack{~}{BCDEFGHIJKLM}$
-
-\section{标记命令测试}
-下划线：$\muline{abc}$，双下划线：$\muuline{def}$
-
-%波浪线：$\muwave{ghi}$
-删除线：$\msout{jkl}$
-
-多重删除：$\mxout{mno}$，虚线：$\mdashuline{pqr}$
-
-点线\footnote{\lipsum[2]}：$\mdotuline{stu}$
-
-\section{图表测试}
+\section{图表}
 \begin{figure}[H]
 \centering
 \includegraphics[width=0.3\textwidth]{test.png}
-\caption{示例图片}
+\caption{图片}
 \label{fig:demo}
 \end{figure}
 
-如\figref{fig:demo}所示，\tabref{tab:demo}展示了数据。
-
 \begin{table}[H]
 \centering
-\caption{示例表格}
+\caption{表格}
 \label{tab:demo}
 \begin{tabular}{ll}
 \toprule
@@ -47,16 +62,22 @@
 \end{tabular}
 \end{table}
 
-\section{代码测试}
-行内代码：\cmd{git commit -m "test"}
+图表引用：如\figref{fig:demo}所示，\tabref{tab:demo}展示了数据。
 
-\begin{code}[caption=Python示例, language=Python, name=Python]
+\section{代码}
+\begin{itemize}
+    \item 行内代码：\cmd{git commit -m "test"}
+    \item 代码块：
+    \begin{lst}[%
+        language=python,
+        displayName=PYTHON]
 print("Hello World!")  # 简单输出
 for i in range(10):
     !*\color{red}print(i)*!  # 带颜色逃逸
-\end{code}
+    \end{lst}
+\end{itemize}
 
-\section{题目环境测试}
+\section{题解环境}
 \begin{prob}[难度系数]
 这是一个多部分题目
 \end{prob}
@@ -79,7 +100,7 @@ for i in range(10):
 证毕。
 \end{pf}
 
-\section{化学式测试}
+\section{化学式}
 \chemfig{H_3C-[:30](-[:-90]OH)-[:-30]O-[:30]H} % 葡萄糖
 
 \ce{CO2 + C -> 2 CO} % 化学反应式
@@ -94,14 +115,12 @@ for i in range(10):
 
 \chemfig{*6(=-N(-CH_3)-(*5(=O)-N(-CH_3)-))} % 尼古丁
 
-\section{特殊功能测试}
-分栏测试：\lipsum{5}
+\section{特殊功能}
+跨行超链接：\url{https://www.thisisaverylooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooongurl.com/example/page?query=longurl}
 
-跨行超链接测试：\url{https://www.thisisaverylongurl.com/example/page?query=longurl}
+\entertwocolumn
+\section{临时双栏}
+\lipsum[1]
+\exittwocolumn
 
-\enteronecolumn
-\section{临时单栏测试}
-\lipsum{5}
-\exitonecolumn
-
-参考文献测试：引用文献\parencite{chen2016xgboost}
+参考文献：引用文献\parencite{chen2016xgboost}

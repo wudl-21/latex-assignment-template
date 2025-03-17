@@ -128,7 +128,7 @@
 \RequirePackage{lstautogobble}   % 去除代码前的空格及末尾空行
 \RequirePackage{listingsutf8}   % 支持代码环境中的UTF-8编码
 \RequirePackage{tcolorbox}       % 文本加框
-\tcbuselibrary{skins, listings}  % tcolorbox代码环境
+\tcbuselibrary{skins, listings, breakable}  % tcolorbox代码环境
 
 % 其他
 \RequirePackage{ulem}       % 各式下划线和删除标记
@@ -398,7 +398,7 @@
 %% 标记
 \providecommand{\muline}[1]{\text{\uline{$#1$}}}            % 公式内下划线
 \providecommand{\muuline}[1]{\text{\uuline{$#1$}}}          % 公式内双下划线
-\providecommand{\muwave}[1]{\text{\wave{$#1$}}}             % 公式内波浪下划线
+\providecommand{\muwave}[1]{\text{\uwave{$#1$}}}             % 公式内波浪下划线
 \providecommand{\msout}[1]{\text{\sout{$#1$}}}              % 公式内删除线
 \providecommand{\mxout}[1]{\text{\xout{$#1$}}}              % 公式内删除标记 (多条斜线)
 \providecommand{\mdashuline}[1]{\text{\dashuline{$#1$}}}    % 公式内虚下划线
@@ -427,6 +427,18 @@
 \newcommand{\exitonecolumn}{%
   \clearpage
   \twocolumn                     % 恢复双栏
+  \thispagestyle{Normal}
+}
+
+%% 双栏切换命令
+\newcommand{\entertwocolumn}{%
+  \clearpage
+  \twocolumn
+  \thispagestyle{Normal}
+}
+\newcommand{\exittwocolumn}{%
+  \clearpage
+  \onecolumn
   \thispagestyle{Normal}
 }
 %%━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -547,26 +559,46 @@
       {»}{{\guillemotright}}1 {ñ}{{\~n}}1 {Ñ}{{\~N}}1,
 }
 
-% 创建支持行号控制的代码环境
+% 创建代码环境
 \makeatletter
-\newtcblisting{code}[1][]{
-    listing only,
-    left=0pt,
-    colback=codebg,
-    colframe=codeborder,
-    enhanced,
-    sharp corners,
-    boxrule=0.5pt,
-    overlay={
-        \node[anchor=south east,
-              font=\footnotesize\ttfamily\color{gray!60},
-              inner sep=3pt] at (frame.south east) {\lstname};
-    },
-    listing options={
-        style=code,
-        #1,
-    }
+\SetupKeyvalOptions{%
+  family=codeinfo,
+  prefix=CodeInfo@
 }
+\DeclareStringOption[python]{language}
+\DeclareStringOption[Unknown]{displayName}
+\DeclareStringOption[]{file}
+\setkeys{codeinfo}{}
+
+\newtcblisting{code}{%
+  listing only,
+  left=0pt,
+  colback=codebg,
+  colframe=codeborder,
+  enhanced,
+  sharp corners,
+  boxrule=0.5pt,
+  breakable,
+  verbatim,
+  listing options={
+    style=code,
+    language=\CodeInfo@language,
+  },
+  overlay={a%
+    \node[anchor=south east,
+      font=\footnotesize\ttfamily\color{gray!60},
+    inner sep=3pt] at (frame.south east) {\CodeInfo@displayName};
+  },
+}
+
+\newenvironment{lst}[1][
+  language=python,
+  displayName=python,
+] {%
+  \setkeys{codeinfo}{#1}%
+  \ifdefvoid{\CodeInfo@file}{}{\lstinputlisting{\CodeInfo@file}}%
+    \code
+} {\endcode}
 \makeatother
 %%━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
@@ -595,4 +627,11 @@
 % ┗━━━━━━━━━━━━━━━━━━━━━┛
 \allowdisplaybreaks[4]      % 允许公式跨页
 \AtBeginEnvironment{tabular}{\singlespacing} % 表格行间距
+\if@UsingEnglish
+    \renewcommand{\figurename}{Figure}          % 图表标题
+    \renewcommand{\tablename}{Table}          % 表格标题
+\else
+    \renewcommand{\figurename}{图}          % 图表标题
+    \renewcommand{\tablename}{表}          % 表格标题
+\fi
 %━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
