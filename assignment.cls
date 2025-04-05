@@ -191,21 +191,12 @@
 }
 
 % 定义所有键及其默认值
-\if@UsingEnglish
-    \DeclareStringOption[Default Title]{title}
-    \DeclareStringOption[Default Course]{course}
-    \DeclareStringOption[AAAA0000]{code}
-    \DeclareStringOption[Default Name]{name}
-    \DeclareStringOption[00000000]{id}
-    \DeclareStringOption[Default Subtitle]{subtitle}
-\else
-    \DeclareStringOption[默认标题]{title}
-    \DeclareStringOption[默认课程]{course}
-    \DeclareStringOption[AAAA0000]{code}
-    \DeclareStringOption[默认姓名]{name}
-    \DeclareStringOption[00000000]{id}
-    \DeclareStringOption[默认副标题]{subtitle}
-\fi
+\DeclareStringOption[]{title}
+\DeclareStringOption[]{course}
+\DeclareStringOption[]{code}
+\DeclareStringOption[]{name}
+\DeclareStringOption[]{id}
+\DeclareStringOption[]{subtitle}
 
 % 定义 \DocInfo 命令
 \newcommand{\DocInfo}[1][]{%
