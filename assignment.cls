@@ -1,23 +1,10 @@
 \NeedsTeXFormat{LaTeX2e}
 \ProvidesClass{assignment}
 
+\makeatletter
 % ┏━━━━━━━━━━━━━━━━━━━━━┓
 % ┃         选项        ┃
 % ┗━━━━━━━━━━━━━━━━━━━━━┛
-% 单/双边模式
-\providecommand{\Side}{oneside} % 单边 (不分奇偶数页, 默认) 或双边 (区分奇偶数页) 模式
-\newif\if@TwoSide                % [布尔变量] 是否为双边模式
-\DeclareOption{oneside}         % 定义“单边模式”
-{
-    \renewcommand{\Side}{oneside}
-    \@TwoSidefalse
-}
-\DeclareOption{twoside}         % 定义“双边模式”
-{
-    \renewcommand{\Side}{twoside}
-    \@TwoSidetrue
-}
-
 % 单/双栏模式
 \providecommand{\Column}{onecolumn}
 \newif\if@TwoColumn
@@ -55,7 +42,7 @@
 % ┏━━━━━━━━━━━━━━━━━━━━━┓
 % ┃      加载文档类     ┃
 % ┗━━━━━━━━━━━━━━━━━━━━━┛
-\LoadClass[a4paper, 10pt, \Side, \Column]{article}   % 加载纸张尺寸=A4，字号=10，...，的 article 类
+\LoadClass[a4paper, 10pt, \Column]{article}   % 加载纸张尺寸=A4，字号=10，...，的 article 类
 %%━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 
@@ -77,9 +64,11 @@
 \RequirePackage{lastpage}   % 返回末页页码
 \RequirePackage{calc}       % 返回文本宽度
 
+\RequirePackage[usegeometry]{typearea}% before geometry!
 \RequirePackage{geometry} % 页边距
 \geometry{
     a4paper,
+    portrait, % 默认纵向 
     vmargin=.5in,
     hmargin=.5in,
     headheight=\maxof{30pt}{1.5\baselineskip}, % 确保至少能容纳1.5行高度
@@ -103,19 +92,25 @@
 % 图片
 \RequirePackage{graphicx}   % 插入图片
 \RequirePackage{float}      % 强制设定图片位置
-\RequirePackage{subfigure}  % figure环境中子图
 \RequirePackage{tikz}       % 绘图
 \RequirePackage{svg}        % 插入svg
 \RequirePackage{wrapfig}    % 文字环绕图表
+\RequirePackage[%
+    font={footnotesize},
+    labelfont={sc,small},
+]{caption}    % 图表标题样式
+\captionsetup[table]{skip=0.5em} % 表格标题与表格间距
+\usepackage{subcaption}     % 子图
 
 % 表格
 \RequirePackage{multirow}   % 表内多行单元格合并
 \RequirePackage{booktabs}   % 三线表
 \RequirePackage{threeparttable} % 支持注释的表格
 \RequirePackage{longtable}  % 表格跨页
-\RequirePackage{lscape}     % 横排表格
 \RequirePackage{diagbox}    % 单元格内对角分割线
 \RequirePackage{makecell}   % 单元格内换行
+\RequirePackage{dcolumn}   % 表格对齐小数点
+\RequirePackage{adjustbox} % 缩放
 
 % 化学式
 \RequirePackage[version=4]{mhchem}  % 基础化学式
@@ -147,23 +142,9 @@
 \RequirePackage{lipsum}     % 生成随机文本
 \RequirePackage{etoolbox}  % 逻辑判断
 \RequirePackage{kvoptions}  % 键值对参数解析
+\RequirePackage{fontscale}   % 字体缩放
+\RequirePackage{lscape} % 横排页面
 %%━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-
-% ┏━━━━━━━━━━━━━━━━━━━━━┓
-% ┃         字体        ┃
-% ┗━━━━━━━━━━━━━━━━━━━━━┛
-%% 常规
-\setmonofont{SFMonoSC}      % 设定等宽字体
-\setsansfont{HelveticaNeue}  % 设定无衬线字体
-\setCJKsansfont{FZHei}[ % 中文无衬线字体
-    AutoFakeSlant = 0.15    % 伪斜体修正（可选）
-]
-\setCJKmonofont{SFMonoSC}[ % 中文等宽字体
-    AutoFakeSlant = 0.15    % 伪斜体修正（可选）
-]
-\allsectionsfont{\sffamily}   % 指定所有章节标题样式
-%━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 
 % ┏━━━━━━━━━━━━━━━━━━━━━┓
@@ -183,8 +164,9 @@
 
 
 % ┏━━━━━━━━━━━━━━━━━━━━━┓
-% ┃       文档键值      ┃
+% ┃       键值设定      ┃
 % ┗━━━━━━━━━━━━━━━━━━━━━┛
+% ━━━━━━━ 文档信息 ━━━━━━━
 \SetupKeyvalOptions{
     family=docinfo,
     prefix=DocInfo@
@@ -206,25 +188,21 @@
 % 初始化默认值
 \setkeys{docinfo}{} % 强制触发默认值存储
 
-
-% ┏━━━━━━━━━━━━━━━━━━━━━┓
-% ┃       布局键值      ┃
-% ┗━━━━━━━━━━━━━━━━━━━━━┛
+% ━━━━━━━ 布局设定 ━━━━━━━
 \SetupKeyvalOptions{
     family=layoutinfo,
     prefix=LayoutInfo@
 }
-
 % 定义键名（字符串类型）
 \DeclareStringOption[1.0]{lineSpacing}
 \DeclareStringOption[1.0]{tableLineSpacing}
 \DeclareStringOption[0cm]{indent}
 \DeclareStringOption[1em]{paragraphSpacing}
-
+% 设置默认值
+\setkeys{layoutinfo}{}
 % 定义布局命令
 \newcommand{\LayoutInfo}[1][]{%
     \setkeys{layoutinfo}{#1}%
-
     % 应用参数
     \setstretch{\LayoutInfo@lineSpacing}
     \renewcommand{\arraystretch}{\LayoutInfo@tableLineSpacing}
@@ -232,24 +210,66 @@
     \setlength{\parskip}{\LayoutInfo@paragraphSpacing}
 }
 
+% ━━━━━━━ 字体设定 ━━━━━━━
+\SetupKeyvalOptions{
+    family=fontinfo,
+    prefix=FontInfo@
+}
+\DeclareStringOption[10pt]{normalSize} % 基础字号
+\DeclareStringOption[1.2]{baselineSkipScale} % 基线间距缩放
+\DeclareStringOption[1.2]{titleScale} % 标题字号缩放
+\DeclareStringOption[SFMonoSC]{monoFont}
+\DeclareStringOption[HelveticaNeue]{sansFont}
+\DeclareStringOption[FZHei]{sansCJKFont}
+\DeclareStringOption[SFMonoSC]{monoCJKFont}
 % 设置默认值
-\setkeys{layoutinfo}{}
+\setkeys{fontinfo}{}
 
+\newcommand{\FontInfo}[1][]{
+    \setkeys{fontinfo}{#1} % 应用参数
 
-% ┏━━━━━━━━━━━━━━━━━━━━━┓
-% ┃       引文键值      ┃
-% ┗━━━━━━━━━━━━━━━━━━━━━┛
+    % 设置字体
+    \setmonofont{\FontInfo@monoFont}      % 设定等宽字体
+    \setsansfont{\FontInfo@sansFont}  % 设定无衬线字体
+    \setCJKsansfont{\FontInfo@sansCJKFont}[ % 中文无衬线字体
+        AutoFakeSlant = 0.15    % 伪斜体修正（可选）
+    ]
+    \setCJKmonofont{\FontInfo@monoCJKFont}[ % 中文等宽字体
+        AutoFakeSlant = 0.15    % 伪斜体修正（可选）
+    ]
+    \fontscalesetup{
+        normalsize/size = \FontInfo@normalSize, % 使用基础字号比例
+        baselineskip-size-ratio = \FontInfo@baselineSkipScale, % 行距比例
+        typographic-scale = musical, % 使用音乐音阶比例 
+    }
+}
+
+% ━━━━━━━ 图片路径设定 ━━━━━━━
+\SetupKeyvalOptions{
+    family=figinfo,
+    prefix=FigInfo@
+}
+% 定义键名（字符串类型）
+\DeclareStringOption[./img/]{path}
+% 定义布局命令
+\newcommand{\FigInfo}[1][]{%
+    \setkeys{figinfo}{#1}%
+    % 应用参数
+    \graphicspath{\FigInfo@path}
+}
+% 设置默认值
+\setkeys{figinfo}{}
+
+% ━━━━━━━ 参考文献设定 ━━━━━━━
 \SetupKeyvalOptions{
     family=bibinfo,
     prefix=BibInfo@
 }
-
 % 定义键名（字符串类型）
 \DeclareStringOption[apa]{style}
 \DeclareStringOption[english]{language}
 \DeclareStringOption[none]{sorting}
 \DeclareStringOption[ref.bib]{path}
-
 % 定义布局命令
 \newcommand{\BibInfo}[1][]{%
     \setkeys{bibinfo}{#1}%
@@ -262,33 +282,8 @@
         backend=biber
     ]{biblatex}\addbibresource{\BibInfo@path}
 }
-
 % 设置默认值
 \setkeys{bibinfo}{}
-
-
-% ┏━━━━━━━━━━━━━━━━━━━━━┓
-% ┃       插图键值      ┃
-% ┗━━━━━━━━━━━━━━━━━━━━━┛
-\SetupKeyvalOptions{
-    family=figinfo,
-    prefix=FigInfo@
-}
-
-% 定义键名（字符串类型）
-\DeclareStringOption[./img/]{path}
-
-% 定义布局命令
-\newcommand{\FigInfo}[1][]{%
-    \setkeys{figinfo}{#1}%
-
-    % 应用参数
-    \graphicspath{\FigInfo@path}
-}
-
-% 设置默认值
-\setkeys{figinfo}{}
-
 
 % ┏━━━━━━━━━━━━━━━━━━━━━┓
 % ┃     处理无效键值    ┃
@@ -320,18 +315,13 @@
     \fancyhead[C]{\DocInfo@title}   % 页眉中
     \fancyhead[L]{\DocInfo@code}   % 页眉左
     \fancyhead[R]{\DocInfo@name}   % 页眉右
-    \if@TwoSide
-        \fancyfoot[RO]{\thepage\ / \pageref{LastPage}}  % 奇数页脚右: <当前页码> / <总页数>
-        \fancyfoot[LE]{\thepage\ / \pageref{LastPage}}  % 偶数页脚左: <当前页码> / <总页数>
-    \else
-        \fancyfoot[C]{%
-            \vbox to \footskip{% 创建固定高度的页脚容器
-                \vfil
-                \thepage\ / \pageref{LastPage}
-                \vfil
-            }
-        }  % 页脚中: <当前页码> / <总页数>
-    \fi
+    \fancyfoot[C]{%
+        \vbox to \footskip{% 创建固定高度的页脚容器
+            \vfil
+            \thepage\ / \pageref{LastPage}
+            \vfil
+        }
+    }  % 页脚中: <当前页码> / <总页数>
 }
 
 %% 首页页眉和页脚样式
@@ -341,20 +331,16 @@
     \fancyhead[C]{%
         \raisebox{-\dp\strutbox}[0pt][0pt]{% 消除标题深度对高度计算的影响
             \parbox[c][\dimexpr30pt+8mm\relax][t]{\textwidth}{% 固定总高度=基准高度+间距
-                \centering{\Huge\bfseries\DocInfo@title}\\[0.5ex]
+                \centering{\scalefont{\FontInfo@titleScale}\bfseries\DocInfo@title}\\[0.5ex]
                 \DocInfo@subtitle
             }
         }
     }
     \fancyhead[L]{\DocInfo@course\\\DocInfo@code}                   % 页眉左
-    \fancyhead[R]{\iName : \makebox[\maxof{\widthof{\DocInfo@name}}{\widthof{\DocInfo@id}}][s]{\DocInfo@name}\\
-        \iID : \makebox[\maxof{\widthof{\DocInfo@name}}{\widthof{\DocInfo@id}}][s]{\texttt{\DocInfo@id}}} % 页眉右
-    \if@TwoSide
-        \fancyfoot[RO]{\thepage\ / \pageref{LastPage}}  % 奇数页脚右: <当前页码> / <总页数>
-        \fancyfoot[LE]{\thepage\ / \pageref{LastPage}}  % 偶数页脚左: <当前页码> / <总页数>
-    \else
-        \fancyfoot[C]{\thepage\ / \pageref{LastPage}}   % 页脚中: <当前页码> / <总页数>
-    \fi
+    \newcommand{\bwidth}{\maxof{\widthof{\texttt\DocInfo@name}}{\widthof{\texttt\DocInfo@id}}}
+    \fancyhead[R]{\iName : \makebox[\bwidth][s]{\texttt\DocInfo@name}\\
+        \iID : \makebox[\bwidth][s]{\texttt\DocInfo@id}} % 页眉右
+    \fancyfoot[C]{\thepage\ / \pageref{LastPage}}   % 页脚中: <当前页码> / <总页数>
 }
 
 \thispagestyle{First}       % 设置首页样式
@@ -365,6 +351,38 @@
 % ┏━━━━━━━━━━━━━━━━━━━━━┓
 % ┃     自定义命令      ┃
 % ┗━━━━━━━━━━━━━━━━━━━━━┛
+%% 横向/纵向切换
+\providecommand{\useportrait}{%
+  \clearpage
+  \KOMAoptions{paper=portrait,DIV=current}%switch to portrait
+  \newgeometry{% geometry settings for portrait
+    vmargin=.5in,
+    hmargin=.5in,
+    headheight=\maxof{30pt}{1.5\baselineskip}, % 确保至少能容纳1.5行高度
+    headsep=4ex, % 增加页眉与正文间距
+    footskip=15mm,          % 固定页脚基线位置
+    heightrounded,
+    includeheadfoot,
+    %showframe,
+  }%
+  \fancyhfoffset{0pt}% <- recalculate head and foot width for fancyhdr
+}
+\providecommand{\uselandscape}{%
+  \clearpage
+  \KOMAoptions{paper=landscape,DIV=current}%switch to landscape
+  \newgeometry{% geometry settings for landscape
+    vmargin=.5in,
+    hmargin=.5in,
+    headheight=\maxof{30pt}{1.5\baselineskip}, % 确保至少能容纳1.5行高度
+    headsep=4ex, % 增加页眉与正文间距
+    footskip=15mm,          % 固定页脚基线位置
+    heightrounded,
+    includeheadfoot,
+    %showframe,
+  }%
+  \fancyhfoffset{0pt}% recalculate head and foot width for fancyhdr
+}
+
 %% 符号
 \providecommand{\abs}[1]{\left\lvert#1\right\rvert}         % 绝对值
 \providecommand{\norm}[1]{\left\lVert#1\right\rVert}        % 模
@@ -488,9 +506,9 @@
 {:}             % 定理开头后所接标点
 { }             % 定理开头后所接空间尺寸, 空格为默认词间距
 {\thmname{#1}}  % 定理开头格式
-\makeatletter
+
 \def\@endtheorem{\qed\endtrivlist\@endpefalse}  % 题解末尾添加 QED 符号 (黑色空心小正方形)
-\makeatother
+
 \theoremstyle{Solution}         % 设定定理样式
 \newtheorem*{sol}{\Solution}    % 题解
 \newtheorem*{ans}{\Answer}      % 回答
@@ -551,7 +569,7 @@
 }
 
 % 创建代码环境
-\makeatletter
+
 \SetupKeyvalOptions{%
   family=codeinfo,
   prefix=CodeInfo@
@@ -590,14 +608,14 @@
   \ifdefvoid{\CodeInfo@file}{}{\lstinputlisting{\CodeInfo@file}}%
     \code
 } {\endcode}
-\makeatother
+
 %%━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 
 % ┏━━━━━━━━━━━━━━━━━━━━━┓
 % ┃    超链接自动换行   ┃
 % ┗━━━━━━━━━━━━━━━━━━━━━┛
-\makeatletter
+
 \def\UrlAlphabet{%
       \do\a\do\b\do\c\do\d\do\e\do\f\do\g\do\h\do\i\do\j%
       \do\k\do\l\do\m\do\n\do\o\do\p\do\q\do\r\do\s\do\t%
@@ -609,7 +627,7 @@
 \g@addto@macro{\UrlBreaks}{\UrlOrds}
 \g@addto@macro{\UrlBreaks}{\UrlAlphabet}
 \g@addto@macro{\UrlBreaks}{\UrlDigits}
-\makeatother
+
 %%━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 
@@ -617,7 +635,6 @@
 % ┃      杂项设置       ┃
 % ┗━━━━━━━━━━━━━━━━━━━━━┛
 \allowdisplaybreaks[4]      % 允许公式跨页
-\AtBeginEnvironment{tabular}{\singlespacing} % 表格行间距
 \if@UsingEnglish
     \renewcommand{\figurename}{Figure}          % 图表标题
     \renewcommand{\tablename}{Table}          % 表格标题
@@ -626,3 +643,4 @@
     \renewcommand{\tablename}{表}          % 表格标题
 \fi
 %━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+\makeatother
